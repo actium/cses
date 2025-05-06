@@ -1,28 +1,42 @@
 #include <iostream>
 
-struct Point {
-    int x;
-    int y;
+template <typename T>
+struct Vector {
+    T dx;
+    T dy;
 };
 
-std::istream& operator >>(std::istream& input, Point& p)
+template <typename T>
+constexpr T cross_product(const Vector<T>& lhs, const Vector<T>& rhs) noexcept
 {
-    return input >> p.x >> p.y;
+    return lhs.dx * rhs.dy - lhs.dy * rhs.dx;
 }
 
-struct Vector {
-    int dx;
-    int dy;
+template <typename T>
+struct Point {
+    T x;
+    T y;
+
+    constexpr Point() noexcept
+        : Point(0, 0)
+    {}
+
+    constexpr Point(T x, T y) noexcept
+        : x(x)
+        , y(y)
+    {}
 };
 
-Vector operator -(const Point& lhs, const Point& rhs)
+template <typename T>
+std::istream& operator >>(std::istream& input, Point<T>& point)
+{
+    return input >> point.x >> point.y;
+}
+
+template <typename T>
+constexpr Vector<T> operator -(const Point<T>& lhs, const Point<T>& rhs) noexcept
 {
     return { lhs.x - rhs.x, lhs.y - rhs.y };
-}
-
-long long cross_product(const Vector& v1, const Vector& v2)
-{
-    return 1ll * v1.dy * v2.dx - 1ll * v2.dy * v1.dx;
 }
 
 int main()
@@ -31,15 +45,15 @@ int main()
     std::cin >> t;
 
     for (unsigned i = 0; i < t; ++i) {
-        Point p[3];
+        Point<long long> p[3];
         std::cin >> p[0] >> p[1] >> p[2];
 
         const long long cp = cross_product(p[1] - p[0], p[2] - p[0]);
-        if (cp < 0)
+        if (cp > 0)
             std::cout << "LEFT" << '\n';
         if (cp == 0)
             std::cout << "TOUCH" << '\n';
-        if (cp > 0)
+        if (cp < 0)
             std::cout << "RIGHT" << '\n';
     }
 
